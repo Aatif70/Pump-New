@@ -37,6 +37,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
   final List<String> _customerTypeOptions = [
     'Individual',
     'Business',
+    'Trust',
     'Corporate'
   ];
   
