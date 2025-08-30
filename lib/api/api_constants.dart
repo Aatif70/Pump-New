@@ -23,6 +23,9 @@ class ApiConstants {
       "Something went wrong! Please check your internet connection.";
   static const String errorMessageKey = "message";
 
+  // Customer API endpoints
+  static const String customerEndpoint = "/api/Customers";
+
 
   // API Endpoints
   static const String loginEndpoint = "/api/Auth/login";
@@ -608,6 +611,21 @@ class ApiConstants {
     print('DEBUG: Format 2: $altUrl2');
     print('DEBUG: Format 3: $altUrl3');
     
+    return url;
+  }
+
+  // Customer API URL methods
+  static String getCustomersUrl() {
+    final url = baseUrl + customerEndpoint;
+    developer.log('Customers URL: $url');
+    print('API_CONSTANTS: Customers URL: $url');
+    return url;
+  }
+
+  static String getCustomersByPumpUrl(String pumpId) {
+    final url = baseUrl + customerEndpoint + '/ByPump/' + pumpId;
+    developer.log('Customers By Pump URL: $url');
+    print('API_CONSTANTS: Customers By Pump URL: $url');
     return url;
   }
 

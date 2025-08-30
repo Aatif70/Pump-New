@@ -23,6 +23,8 @@ import '../profile/profile_screen.dart';
 import '../inventory/inventory_screen.dart';
 import '../finance/finance_screen.dart';
 import '../operations/operations_screen.dart';
+import '../customer/customer_list_screen.dart';
+import '../voucher/voucher_screen.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -593,6 +595,22 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                     );
                                   },
                                 ),
+
+
+                                _buildQuickAccessItem(
+                                  'Attendance',
+                                  Icons.people_alt_rounded,
+                                  Colors.pinkAccent,
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => const AttendanceScreen()),
+                                    );
+                                  },
+                                ),
+
+
+
                                 _buildQuickAccessItem(
                                   'Finance',
                                   Icons.account_balance_wallet,
@@ -653,16 +671,31 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
 
                                 _buildQuickAccessItem(
-                                  'Attendance',
+                                  'Vouchers',
+                                  Icons.book,
+                                  Colors.pinkAccent,
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => const VoucherScreen()),
+                                    );
+                                  },
+                                ),
+
+                                _buildQuickAccessItem(
+                                  'Customers',
                                   Icons.people_alt_rounded,
                                   Colors.pinkAccent,
                                   onTap: () {
-                                   Navigator.push(
-                                     context,
-                                     MaterialPageRoute(builder: (context) => const AttendanceScreen()),
-                                   );
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => const CustomerListScreen()),
+                                    );
                                   },
                                 ),
+
+
+
 
 
                               ],
