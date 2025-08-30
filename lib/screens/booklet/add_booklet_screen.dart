@@ -37,7 +37,7 @@ class _AddBookletScreenState extends State<AddBookletScreen> {
   // Booklet type options
   final List<String> _bookletTypeOptions = [
     '100-Slip',
-    '50-Slip'
+    '200-Slip'
   ];
 
   // TODO: This should come from user session or settings

@@ -341,7 +341,7 @@ class _HomeScreenState extends State with SingleTickerProviderStateMixin {
                                     MaterialPageRoute(builder: (context) => const SupplierListScreen()))),
                           ],
                         ),
-                        const SizedBox(height: 24),
+                        // const SizedBox(height: 12),
 
                         // Staff & Operations
                         _buildSectionTitle('Staff & Operations', Icons.people_rounded),
@@ -365,7 +365,7 @@ class _HomeScreenState extends State with SingleTickerProviderStateMixin {
                                     MaterialPageRoute(builder: (context) => const CustomerListScreen()))),
                           ],
                         ),
-                        const SizedBox(height: 24),
+
 
                         // Financial Management
                         _buildSectionTitle('Financial Management', Icons.account_balance_wallet_rounded),
