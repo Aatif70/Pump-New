@@ -79,6 +79,15 @@ class _AddBookletScreenState extends State<AddBookletScreen> {
       final repository = CustomerRepository();
       final response = await repository.getAllCustomers();
       
+      // Debug print for customer loading
+      print('Customer loading response: success=${response.success}, error=${response.errorMessage}');
+      if (response.data != null) {
+        print('Loaded ${response.data!.length} customers');
+        response.data!.forEach((customer) {
+          print('Customer: ${customer.customerName} (${customer.customerCode}) - ID: ${customer.customerId}');
+        });
+      }
+      
       if (response.success) {
         setState(() {
           _customers = response.data ?? [];
@@ -91,6 +100,7 @@ class _AddBookletScreenState extends State<AddBookletScreen> {
         });
       }
     } catch (e) {
+      print('Error loading customers: $e');
       setState(() {
         _errorMessage = 'Error loading customers: $e';
         _isLoadingCustomers = false;
@@ -145,6 +155,31 @@ class _AddBookletScreenState extends State<AddBookletScreen> {
       return;
     }
     
+    // Recalculate total slips to ensure accuracy before submission
+    _calculateTotalSlips();
+    
+    // Validate that slip range matches total slips
+    final start = int.tryParse(_slipRangeStartController.text);
+    final end = int.tryParse(_slipRangeEndController.text);
+    final total = int.tryParse(_totalSlipsController.text);
+    
+    if (start != null && end != null && total != null) {
+      final expectedTotal = end - start + 1;
+      if (total != expectedTotal) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Slip range mismatch: Range $start-$end should have $expectedTotal slips, not $total'),
+            backgroundColor: Colors.red.shade600,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+        return;
+      }
+    }
+    
     setState(() {
       _isLoading = true;
       _errorMessage = '';
@@ -165,17 +200,33 @@ class _AddBookletScreenState extends State<AddBookletScreen> {
         'issuedDate': _selectedDate.toIso8601String(),
       };
       
-      // Log the request details
-      developer.log('Sending POST request to ${ApiConstants.baseUrl}/api/Booklets');
-      developer.log('Request body: $bookletData');
+      // Debug prints for form submission
+      print('=== BOOKLET FORM SUBMISSION DEBUG ===');
+      print('Selected customer: ${_selectedCustomer!.customerName} (${_selectedCustomer!.customerCode})');
+      print('Customer ID: ${_selectedCustomer!.customerId}');
+      print('Booklet number: ${_bookletNumberController.text}');
+      print('Booklet type: ${_bookletTypeController.text}');
+      print('Slip range start: ${_slipRangeStartController.text}');
+      print('Slip range end: ${_slipRangeEndController.text}');
+      print('Total slips: ${_totalSlipsController.text}');
+      print('Issued date: ${_selectedDate.toIso8601String()}');
+      print('Pump ID: $_pumpId');
+      print('Full request body: $bookletData');
+      print('Sending POST request to ${ApiConstants.baseUrl}/api/Booklets');
       
       // Call repository to add booklet
       final response = await repository.addBooklet(bookletData);
       
+      // Debug print for response
+      print('=== BOOKLET API RESPONSE DEBUG ===');
+      print('Response success: ${response.success}');
+      print('Response error message: ${response.errorMessage}');
+      print('Response data: ${response.data}');
+      
       if (!mounted) return;
       
       if (response.success) {
-        developer.log('Booklet created successfully');
+        print('Booklet created successfully');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Booklet added successfully'),
@@ -190,7 +241,7 @@ class _AddBookletScreenState extends State<AddBookletScreen> {
         // Return true to indicate success
         Navigator.pop(context, true);
       } else {
-        developer.log('Failed to create booklet: ${response.errorMessage}');
+        print('Failed to create booklet: ${response.errorMessage}');
         setState(() {
           _errorMessage = response.errorMessage ?? 'Failed to add booklet';
         });
@@ -207,7 +258,7 @@ class _AddBookletScreenState extends State<AddBookletScreen> {
         );
       }
     } catch (e) {
-      developer.log('Error submitting form: $e');
+      print('Error submitting form: $e');
       setState(() {
         _errorMessage = e.toString();
       });
@@ -231,6 +282,29 @@ class _AddBookletScreenState extends State<AddBookletScreen> {
 
   String _formatDate(DateTime date) {
     return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+  }
+
+  void _calculateTotalSlips() {
+    final startText = _slipRangeStartController.text;
+    final endText = _slipRangeEndController.text;
+    
+    if (startText.isNotEmpty && endText.isNotEmpty) {
+      final start = int.tryParse(startText);
+      final end = int.tryParse(endText);
+      
+      if (start != null && end != null && end >= start) {
+        final calculatedTotal = end - start + 1;
+        _totalSlipsController.text = calculatedTotal.toString();
+        print('Auto-calculated total slips: $calculatedTotal (range: $start to $end)');
+        
+        // Also update the booklet type if it doesn't match
+        if (calculatedTotal == 100 && _bookletTypeController.text != '100-Slip') {
+          _bookletTypeController.text = '100-Slip';
+        } else if (calculatedTotal == 50 && _bookletTypeController.text != '50-Slip') {
+          _bookletTypeController.text = '50-Slip';
+        }
+      }
+    }
   }
 
   @override
@@ -363,6 +437,8 @@ class _AddBookletScreenState extends State<AddBookletScreen> {
                                   } else if (newValue == '50-Slip') {
                                     _totalSlipsController.text = '50';
                                   }
+                                  // Also auto-calculate based on slip range if available
+                                  _calculateTotalSlips();
                                 });
                               }
                             },
@@ -415,13 +491,23 @@ class _AddBookletScreenState extends State<AddBookletScreen> {
                                     prefixIcon: Icon(Icons.person, color: AppTheme.primaryBlue),
                                     filled: true,
                                     fillColor: Colors.grey.shade50,
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                   ),
                                   value: _selectedCustomer,
                                   hint: const Text('Select a customer'),
+                                  isExpanded: true,
+                                  menuMaxHeight: 200,
                                   items: _customers.map((Customer customer) {
                                     return DropdownMenuItem<Customer>(
                                       value: customer,
-                                      child: Text('${customer.customerName} (${customer.customerCode})'),
+                                      child: Container(
+                                        width: double.infinity,
+                                        child: Text(
+                                          '${customer.customerName} (${customer.customerCode})',
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(fontSize: 13),
+                                        ),
+                                      ),
                                     );
                                   }).toList(),
                                   onChanged: (Customer? newValue) {
@@ -486,6 +572,9 @@ class _AddBookletScreenState extends State<AddBookletScreen> {
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
                             ],
+                            onChanged: (value) {
+                              _calculateTotalSlips();
+                            },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter start slip number';
@@ -532,6 +621,9 @@ class _AddBookletScreenState extends State<AddBookletScreen> {
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
                             ],
+                            onChanged: (value) {
+                              _calculateTotalSlips();
+                            },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter end slip number';

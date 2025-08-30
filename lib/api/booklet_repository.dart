@@ -71,6 +71,15 @@ class BookletRepository {
 
       final url = Uri.parse('${ApiConstants.baseUrl}/api/Booklets');
       
+      // Debug prints for HTTP request
+      print('=== HTTP REQUEST DEBUG ===');
+      print('URL: $url');
+      print('Headers: ${{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      }}');
+      print('Request body: ${json.encode(bookletData)}');
+      
       final response = await http.post(
         url,
         headers: {
@@ -79,6 +88,12 @@ class BookletRepository {
         },
         body: json.encode(bookletData),
       );
+      
+      // Debug prints for HTTP response
+      print('=== HTTP RESPONSE DEBUG ===');
+      print('Status code: ${response.statusCode}');
+      print('Response headers: ${response.headers}');
+      print('Response body: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final Map<String, dynamic> responseData = json.decode(response.body);
