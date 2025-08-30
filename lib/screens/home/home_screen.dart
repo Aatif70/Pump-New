@@ -565,15 +565,16 @@ class _HomeScreenState extends State with SingleTickerProviderStateMixin {
     );
   }
 
-  // Build drawer (keeping original structure but with cleaner styling)
+  // Build drawer with compact design to prevent overflow
   Widget _buildDrawer() {
     return Drawer(
       elevation: 2,
-      width: MediaQuery.of(context).size.width * 0.82,
+      width: MediaQuery.of(context).size.width * 0.75,
       child: Column(
         children: [
+          // Compact header
           Container(
-            height: 200,
+            height: 160,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -584,115 +585,257 @@ class _HomeScreenState extends State with SingleTickerProviderStateMixin {
                 ],
               ),
             ),
-            padding: const EdgeInsets.fromLTRB(20, 50, 20, 20),
+            padding: const EdgeInsets.fromLTRB(16, 40, 16, 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
-                  backgroundColor: Colors.white,
-                  radius: 32,
-                  child: Text(
-                    _currentUser?.fullName.isNotEmpty == true
-                        ? _currentUser!.fullName.substring(0, 1)
-                        : username.substring(0, 1),
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.primaryBlue,
+                Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: Colors.white,
+                      radius: 24,
+                      child: Text(
+                        _currentUser?.fullName.isNotEmpty == true
+                            ? _currentUser!.fullName.substring(0, 1)
+                            : username.substring(0, 1),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.primaryBlue,
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _currentUser?.fullName ?? username,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 2),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              _currentUser?.role ?? 'Admin',
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 16),
-                Text(
-                  _currentUser?.fullName ?? username,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 4),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.green,
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Text(
-                    _currentUser?.role ?? 'Administrator',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 6,
+                        height: 6,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      const Text(
+                        'Online',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
+          // Navigation items
           Expanded(
             child: Container(
               color: Colors.white,
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 8),
-                    _buildDrawerSection('Navigation'),
-                    _buildDrawerItem(
-                      icon: Icons.dashboard_rounded,
-                      title: 'Dashboard',
-                      onTap: () => Navigator.pop(context),
-                      isSelected: true,
-                    ),
-                    _buildDrawerItem(
-                      icon: Icons.account_circle_rounded,
-                      title: 'Profile',
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(
-                            builder: (context) => const ProfileScreen()));
-                      },
-                    ),
-                    _buildDrawerSection('Management'),
-                    _buildDrawerItem(
-                      icon: Icons.schedule_rounded,
-                      title: 'Shifts',
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(
-                            builder: (context) => const ShiftListScreen()));
-                      },
-                    ),
-                    _buildDrawerItem(
-                      icon: Icons.local_gas_station_rounded,
-                      title: 'View Tanks',
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(
-                            builder: (context) => const FuelTankListScreen()));
-                      },
-                    ),
-                    _buildDrawerItem(
-                      icon: Icons.people_rounded,
-                      title: 'View Employees',
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(
-                            builder: (context) => const EmployeeListScreen()));
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    const Divider(height: 1),
-                    _buildDrawerItem(
-                      icon: Icons.logout_rounded,
-                      title: 'Logout',
-                      onTap: _logout,
-                      color: Colors.red.shade600,
-                    ),
-                    const SizedBox(height: 20),
-                  ],
-                ),
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  const SizedBox(height: 8),
+                  _buildDrawerSection('Navigation'),
+                  _buildDrawerItem(
+                    icon: Icons.dashboard_rounded,
+                    title: 'Dashboard',
+                    onTap: () => Navigator.pop(context),
+                    isSelected: true,
+                  ),
+                  _buildDrawerItem(
+                    icon: Icons.account_circle_rounded,
+                    title: 'Profile',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => const ProfileScreen()));
+                    },
+                  ),
+                  _buildDrawerSection('Management'),
+                  _buildDrawerItem(
+                    icon: Icons.schedule_rounded,
+                    title: 'Shifts',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => const ShiftListScreen()));
+                    },
+                  ),
+                  _buildDrawerItem(
+                    icon: Icons.local_gas_station_rounded,
+                    title: 'Fuel Tanks',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => const FuelTankListScreen()));
+                    },
+                  ),
+                  _buildDrawerItem(
+                    icon: Icons.people_rounded,
+                    title: 'Employees',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => const EmployeeListScreen()));
+                    },
+                  ),
+                  _buildDrawerItem(
+                    icon: Icons.business_rounded,
+                    title: 'Suppliers',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => const SupplierListScreen()));
+                    },
+                  ),
+                  _buildDrawerItem(
+                    icon: Icons.people_alt_rounded,
+                    title: 'Customers',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => const CustomerListScreen()));
+                    },
+                  ),
+                  _buildDrawerItem(
+                    icon: Icons.book_rounded,
+                    title: 'Booklets',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => const BookletListScreen()));
+                    },
+                  ),
+                  _buildDrawerSection('Operations'),
+                  _buildDrawerItem(
+                    icon: Icons.settings_applications_rounded,
+                    title: 'Daily Operations',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => const OperationsScreen()));
+                    },
+                  ),
+                  _buildDrawerItem(
+                    icon: Icons.local_shipping_rounded,
+                    title: 'Fuel Deliveries',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => const FuelDeliveryHistoryScreen()));
+                    },
+                  ),
+                  _buildDrawerItem(
+                    icon: Icons.inventory_2_rounded,
+                    title: 'Inventory',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => const InventoryScreen()));
+                    },
+                  ),
+                  _buildDrawerItem(
+                    icon: Icons.on_device_training_rounded,
+                    title: 'All Readings',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => const AllReadingsScreen()));
+                    },
+                  ),
+                  _buildDrawerSection('Finance'),
+                  _buildDrawerItem(
+                    icon: Icons.account_balance_wallet_rounded,
+                    title: 'Finance',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => const FinanceScreen()));
+                    },
+                  ),
+                  _buildDrawerItem(
+                    icon: Icons.bar_chart_rounded,
+                    title: 'Sales Statistics',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => const SalesStatisticsScreen()));
+                    },
+                  ),
+                  _buildDrawerItem(
+                    icon: Icons.assessment_rounded,
+                    title: 'Reports',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => const ReportsOptionsScreen()));
+                    },
+                  ),
+                  _buildDrawerItem(
+                    icon: Icons.receipt_long_rounded,
+                    title: 'Vouchers',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => const VoucherScreen()));
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  const Divider(height: 1, indent: 16, endIndent: 16),
+                  _buildDrawerItem(
+                    icon: Icons.logout_rounded,
+                    title: 'Logout',
+                    onTap: _logout,
+                    color: Colors.red.shade600,
+                  ),
+                  const SizedBox(height: 16),
+                ],
               ),
             ),
           ),
@@ -703,18 +846,26 @@ class _HomeScreenState extends State with SingleTickerProviderStateMixin {
 
   Widget _buildDrawerSection(String title) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          title,
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey.shade600,
-            letterSpacing: 0.8,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
+      child: Row(
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey.shade600,
+              letterSpacing: 0.5,
+            ),
           ),
-        ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Divider(
+              color: Colors.grey.shade300,
+              thickness: 1,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -729,25 +880,42 @@ class _HomeScreenState extends State with SingleTickerProviderStateMixin {
     final itemColor = color ?? (isSelected ? AppTheme.primaryBlue : Colors.grey.shade700);
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 1),
       decoration: BoxDecoration(
         color: isSelected ? AppTheme.primaryBlue.withValues(alpha: 0.1) : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
       ),
       child: ListTile(
         dense: true,
-        horizontalTitleGap: 8,
-        leading: Icon(icon, color: itemColor, size: 20),
+        horizontalTitleGap: 6,
+        minLeadingWidth: 20,
+        leading: Container(
+          width: 28,
+          height: 28,
+          decoration: BoxDecoration(
+            color: isSelected 
+                ? AppTheme.primaryBlue.withValues(alpha: 0.15)
+                : itemColor.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Icon(
+            icon, 
+            color: itemColor, 
+            size: 16,
+          ),
+        ),
         title: Text(
           title,
           style: TextStyle(
             color: itemColor,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-            fontSize: 14,
+            fontSize: 13,
           ),
+          overflow: TextOverflow.ellipsis,
         ),
         onTap: onTap,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       ),
     );
   }
