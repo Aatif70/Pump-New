@@ -39,67 +39,62 @@ class FuelTypeRepository {
     return headers;
   }
 
-  // Get all fuel types for the current petrol pump
-  Future<ApiResponse<List<FuelType>>> getFuelTypesByPetrolPump() async {
-    developer.log('FuelTypeRepository: Getting fuel types for petrol pump');
-    
+  // Get all fuel types for a specific petrol pump
+  Future<ApiResponse<List<FuelType>>> getFuelTypesByPetrolPump(String petrolPumpId) async {
+    developer.log('FuelTypeRepository: Getting fuel types for petrol pump: $petrolPumpId');
     try {
-      final url = ApiConstants.getFuelTypeByPetrolPumpUrl();
+      final url = ApiConstants.getPumpFuelTypesUrl(petrolPumpId);
       developer.log('FuelTypeRepository: API URL: $url');
-      
       final headers = await _getHeaders();
-      
       final response = await http.get(
         Uri.parse(url),
         headers: headers,
       );
-
-      developer.log('FuelTypeRepository: Response status code: ${response.statusCode}');
+      developer.log('FuelTypeRepository: Response status code:  [32m${response.statusCode} [0m');
       developer.log('FuelTypeRepository: Response body: ${response.body}');
-
       if (response.statusCode == ApiConstants.statusOk) {
-        // Handle different response formats
         final responseData = json.decode(response.body);
         List<dynamic> fuelTypesJson = [];
-        
-        // Check if response follows the standard API format with data field
         if (responseData is Map<String, dynamic> && responseData.containsKey('data')) {
-          developer.log('FuelTypeRepository: Response contains data field');
           fuelTypesJson = responseData['data'] as List;
         } else if (responseData is List) {
-          // Direct list response
-          developer.log('FuelTypeRepository: Response is a direct list');
           fuelTypesJson = responseData;
         }
-        
-        developer.log('FuelTypeRepository: Parsed ${fuelTypesJson.length} fuel types');
-        
-        final fuelTypes = fuelTypesJson
-            .map((json) => FuelType.fromJson(json))
-            .toList();
-        
-        // Debug: Check parsed data
-        for (var fuelType in fuelTypes) {
-          developer.log('FuelTypeRepository: Parsed fuel type - ID: ${fuelType.fuelTypeId}, Name: ${fuelType.name}');
-        }
-        
+        final fuelTypes = fuelTypesJson.map((json) => FuelType.fromJson(json)).toList();
         return ApiResponse<List<FuelType>>(
           success: true,
           data: fuelTypes,
         );
       } else {
-        developer.log('FuelTypeRepository: Error fetching fuel types: ${response.statusCode}');
         return ApiResponse<List<FuelType>>(
           success: false,
           errorMessage: 'Failed to fetch fuel types: ${response.statusCode}',
         );
       }
     } catch (e) {
-      developer.log('FuelTypeRepository: Exception when fetching fuel types: $e');
       return ApiResponse<List<FuelType>>(
         success: false,
         errorMessage: 'Error: $e',
       );
     }
+  }
+
+  // Get all fuel types for the current petrol pump (auto-detect pumpId)
+  Future<ApiResponse<List<FuelType>>> getAllFuelTypes() async {
+    final token = await ApiConstants.getAuthToken();
+    if (token == null) {
+      return ApiResponse<List<FuelType>>(
+        success: false,
+        errorMessage: 'Authentication token not found',
+      );
+    }
+    final pumpId = JwtDecoder.getClaim<String>(token, 'petrolPumpId');
+    if (pumpId == null || pumpId.isEmpty) {
+      return ApiResponse<List<FuelType>>(
+        success: false,
+        errorMessage: 'Petrol pump ID not found. Please login again.',
+      );
+    }
+    return await getFuelTypesByPetrolPump(pumpId);
   }
 } 

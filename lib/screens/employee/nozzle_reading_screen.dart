@@ -145,7 +145,7 @@ class _NozzleReadingScreenState extends State<NozzleReadingScreen> {
     });
     
     try {
-      final response = await _fuelTypeRepository.getFuelTypesByPetrolPump();
+      final response = await _fuelTypeRepository.getFuelTypesByPetrolPump(_petrolPumpId ?? '');
       
       if (response.success && response.data != null) {
         setState(() {

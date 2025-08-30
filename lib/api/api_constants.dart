@@ -26,6 +26,8 @@ class ApiConstants {
   // Customer API endpoints
   static const String customerEndpoint = "/api/Customers";
 
+  // Vehicle Transaction API endpoints
+  static const String vehicleTransactionEndpoint = "/api/VehicleTransaction";
 
   // API Endpoints
   static const String loginEndpoint = "/api/Auth/login";
@@ -626,6 +628,28 @@ class ApiConstants {
     final url = baseUrl + customerEndpoint + '/ByPump/' + pumpId;
     developer.log('Customers By Pump URL: $url');
     print('API_CONSTANTS: Customers By Pump URL: $url');
+    return url;
+  }
+
+  // Vehicle Transaction API URL methods
+  static String getVehicleTransactionUrl() {
+    final url = baseUrl + vehicleTransactionEndpoint;
+    developer.log('Vehicle Transaction URL: $url');
+    print('API_CONSTANTS: Vehicle Transaction URL: $url');
+    return url;
+  }
+
+  static String getVehicleTransactionsUrl(String petrolPumpId) {
+    final url = baseUrl + vehicleTransactionEndpoint + '/petrol-pump/' + petrolPumpId;
+    developer.log('Vehicle Transactions By Pump URL: $url');
+    print('API_CONSTANTS: Vehicle Transactions By Pump URL: $url');
+    return url;
+  }
+
+  static String getVehicleTransactionByIdUrl(String transactionId) {
+    final url = baseUrl + vehicleTransactionEndpoint + '/' + transactionId;
+    developer.log('Vehicle Transaction By ID URL: $url');
+    print('API_CONSTANTS: Vehicle Transaction By ID URL: $url');
     return url;
   }
 

@@ -215,7 +215,7 @@ class _EmployeeDashboardScreenState extends State<EmployeeDashboardScreen> {
     
     try {
       developer.log('Fetching fuel types for petrol pump');
-      final response = await _fuelTypeRepository.getFuelTypesByPetrolPump();
+      final response = await _fuelTypeRepository.getFuelTypesByPetrolPump(_petrolPumpId);
       
       if (response.success && response.data != null) {
         setState(() {

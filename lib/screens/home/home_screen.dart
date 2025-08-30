@@ -26,6 +26,7 @@ import '../operations/operations_screen.dart';
 import '../customer/customer_list_screen.dart';
 import '../booklet/booklet_list_screen.dart';
 import '../voucher/voucher_screen.dart';
+import '../vehicle_transaction/vehicle_transaction_list_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -393,6 +394,9 @@ class _HomeScreenState extends State with SingleTickerProviderStateMixin {
                             _buildCompactCard('Booklets', Icons.menu_book_rounded,
                                 Colors.orange.shade600, () => Navigator.push(context,
                                     MaterialPageRoute(builder: (context) => const BookletListScreen()))),
+                            _buildCompactCard('Vehicle Transactions', Icons.directions_car_rounded,
+                                Colors.indigo.shade600, () => Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) => const VehicleTransactionListScreen()))),
                           ],
                         ),
                         const SizedBox(height: 16),
@@ -750,6 +754,15 @@ class _HomeScreenState extends State with SingleTickerProviderStateMixin {
                       Navigator.pop(context);
                       Navigator.push(context, MaterialPageRoute(
                           builder: (context) => const BookletListScreen()));
+                    },
+                  ),
+                  _buildDrawerItem(
+                    icon: Icons.directions_car_rounded,
+                    title: 'Vehicle Transactions',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => const VehicleTransactionListScreen()));
                     },
                   ),
                   _buildDrawerSection('Operations'),

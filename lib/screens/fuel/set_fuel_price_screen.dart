@@ -88,7 +88,8 @@ class _SetFuelPriceScreenState extends State<SetFuelPriceScreen> {
   Future<void> _fetchFuelTypes() async {
     try {
       developer.log('SetFuelPriceScreen: Fetching fuel types from API');
-      final response = await _fuelTypeRepository.getFuelTypesByPetrolPump();
+      final pumpId = await _pricingRepository.getPumpId();
+      final response = await _fuelTypeRepository.getFuelTypesByPetrolPump(pumpId ?? '');
       
       if (response.success && response.data != null) {
         setState(() {
