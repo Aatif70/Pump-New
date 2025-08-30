@@ -24,6 +24,7 @@ import '../inventory/inventory_screen.dart';
 import '../finance/finance_screen.dart';
 import '../operations/operations_screen.dart';
 import '../customer/customer_list_screen.dart';
+import '../booklet/booklet_list_screen.dart';
 import '../voucher/voucher_screen.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -316,6 +317,32 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => const SupplierListScreen()),
+                          );
+                        },
+                      ),
+                      
+                      // CUSTOMERS
+                      _buildDrawerItem(
+                        icon: Icons.people_alt_rounded,
+                        title: 'Customers',
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const CustomerListScreen()),
+                          );
+                        },
+                      ),
+                      
+                      // BOOKLETS
+                      _buildDrawerItem(
+                        icon: Icons.book_rounded,
+                        title: 'Booklets',
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const BookletListScreen()),
                           );
                         },
                       ),
@@ -690,6 +717,18 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(builder: (context) => const CustomerListScreen()),
+                                    );
+                                  },
+                                ),
+
+                                _buildQuickAccessItem(
+                                  'Booklets',
+                                  Icons.book_rounded,
+                                  Colors.indigo,
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => const BookletListScreen()),
                                     );
                                   },
                                 ),
